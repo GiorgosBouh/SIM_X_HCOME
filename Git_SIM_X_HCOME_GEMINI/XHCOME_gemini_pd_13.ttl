@@ -1,0 +1,123 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+@prefix owl: <http://www.w3.org/2002/07/owl#>
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+@prefix pdma: <http://pdma-ontology.org#>
+
+ontology PDMA-PO
+  imports: 
+      [ rdf:OWL2XML ]
+
+  dataproperty:
+      hasTremorScore [range xsd:int]
+      hasBradykinesiaScore [range xsd:int]
+      # Add data properties for other UPDRS Part II assessment items
+      medicationType [domain pdma:Medication range xsd:string]
+      medicationPurpose [domain pdma:Medication range xsd:string]
+
+  objectproperty:
+      performs [domain pdma:PDPatient range pdma:Activity]
+      describes [domain pdma:SensorData range pdma:RecognizedEvent]
+      triggers [domain pdma:RecognizedEvent range pdma:AlertNotification]
+      informs [domain pdma:AlertNotification range pdma:Doctor]
+      hasDiagnosis [domain pdma:PDPatient range pdma:PDDiagnosis]
+      records [domain pdma:Doctor  range pdma:RecognizedEvent]
+      includesMedication [domain pdma:DailyDosagePlan range pdma:Medication]
+      hasRiskFactor [domain pdma:PDPatient range pdma:RiskFactor]
+      hasComplication [domain pdma:PDPatient range pdma:Complication]
+
+  class:
+
+      # PD-related concepts
+      PDPatient [
+          subClassOf: pdma:Patient
+      ]
+      PDDiagnosis [
+          subClassOf: pdma:MedicalDiagnosis
+      ]
+      PDTremor [
+          subClassOf: pdma:Symptom
+      ]
+      PDBrakinesia [
+          subClassOf: pdma:Symptom
+      ]
+      PDFallingEventObservation [
+          subClassOf: pdma:RecognizedEvent
+      ]
+      PDMissingDoseEventObservation [
+          subClassOf: pdma:RecognizedEvent
+      ]
+      Rigidity [  # Additional PD symptom
+          subClassOf: pdma:Symptom
+      ]
+      GaitImpairment [  # Additional PD symptom
+          subClassOf: pdma:Symptom
+      ]
+
+      # Sensor Data
+      SensorData [
+          subClassOf: pdma:Data
+      ]
+      SmartWatch [
+          subClassOf: pdma:SensorType
+      ]
+      WalkingActivity [
+          subClassOf: pdma:Activity
+      ]
+      # Add other relevant activity types
+
+      # Activities of Daily Living
+      Activity [
+          subClassOf: pdma:Action
+      ]
+
+      # Alerting System
+      RecognizedEvent [
+          subClassOf: pdma:Event
+      ]
+      AlertNotification [
+          subClassOf: pdma:Communication
+      ]
+      Doctor [
+          subClassOf: pdma:HealthcareProfessional
+      ]
+
+      # Patient Health Records
+      PatientHealthRecord [
+          subClassOf: pdma:MedicalRecord
+      ]
+      DailyDosagePlan [
+          subClassOf: pdma:MedicalRecommendation
+      ]
+      MedicalPrescription [
+          subClassOf: pdma:Authorization
+      ]
+      DosageTime [
+          subClassOf: pdma:TimeInterval
+      ]
+      Medication [  # New class for medication details
+          subClassOf: pdma:MedicalProduct
+      ]
+
+      # Additional concepts
+      SketchingActivity [  # Example activity for further development
+          subClassOf: pdma:Activity
+      ]
+      RiskFactor [  # New class for risk factors
+          subClassOf: pdma:MedicalCondition
+      ]
+      Complication [  # New class for complications
+          subClassOf: pdma:MedicalCondition
+      ]
+
+# Sample SWRL Rule (Replace with more complex rules as needed)
+# This rule exemplifies how to identify potential medication adherence issues based on tremor and bradykinesia observations
+
+rule :CheckMedicationAdherence 
+[
+  ?obs rdf:type pdma:PDMissingDoseEventObservation  
+  ?obs pdma:records ?doctor .
+  
+  # Check for presence of tremor or bradykinesia in recent observations
+  # (Replace timeframe with appropriate value)
+  [ ?recentObs pdma:records ?doctor ;
+    pdma:
